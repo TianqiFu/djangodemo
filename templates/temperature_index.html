@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div id="Temperature"></div>
+        <div id="Humidity"></div>
+        <div id="Illumination"></div>
+        <div id="SoilMoisture"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    Highcharts.setOptions({
+      global: {useUTC: false }
+    });
+    chart_temperature = Highcharts.chart("Temperature", {
+      chart: {
+        type: 'spline',
+        events: {
+        // current problem is the x and y are not same
+          load: function () {
+            var series = this.series[0];
+            setInterval(function (){
+              $.ajax({
+                  url:'/sensor/get_temperature/',
+                  success: function(data) {
+                      var y = data.s1[data.s1.length-1];
+                      series.addPoint([y.time,y.Temperature], true, true);
+                  },
+              });
+            },1000);
+          },
+        },
+      },
+      title: {text: 'Temperature'},
+      xAxis: {type: "category",min: 5, max: 15},
+      yAxis: {title: {text: 'Temperature'}},
+      rangeSelector: {
+            allButtonsEnabled: true,
+            selected: 2
+        },
+      navigator:{
+            enabled:true
+        },
+      scrollbar: {
+        enabled: true
+      },
+      series: [{
+                name: 'Temperature',
+                data: {{res|safe}},
+            }],
+    });
+    //chart for humidity
+    chart_humidity = Highcharts.chart("Humidity", {
+      chart: {
+        type: 'spline',
+      },
+      title: {text: 'Humidity'},
+      xAxis: {type: "category",min: 5, max: 15},
+      yAxis: {title: {text: 'Humidity %'}},
+      rangeSelector: {
+            allButtonsEnabled: true,
+            selected: 2
+      },
+      navigator:{
+            enabled:true
+      },
+      scrollbar: {
+        enabled: true
+      },
+      series: [{
+                name: 'Humidity',
+                data: {{res_2|safe}},
+      }],
+    });
+    //chart for illumination
+    chart_illumination = Highcharts.chart("Illumination", {
+      chart: {
+        type: 'spline',
+      },
+      title: {text: 'Illumination'},
+      xAxis: {type: "category",min: 5, max: 15},
+      yAxis: {title: {text: 'Illumination lx'}},
+      rangeSelector: {
+            allButtonsEnabled: true,
+            selected: 2
+      },
+      navigator:{
+            enabled:true
+      },
+      scrollbar: {
+        enabled: true
+      },
+      series: [{
+                name: 'illumination',
+                data: {{res_3|safe}},
+      }],
+    });
+    //chart for soilmoisture
+    chart_soilmoisture = Highcharts.chart("SoilMoisture", {
+      chart: {
+        type: 'spline',
+      },
+      title: {text: 'SoilMoisture'},
+      xAxis: {type: "category",min: 5, max: 15},
+      yAxis: {title: {text: 'SoilMoisture %'}},
+      rangeSelector: {
+            allButtonsEnabled: true,
+            selected: 2
+      },
+      navigator:{
+            enabled:true
+      },
+      scrollbar: {
+        enabled: true
+      },
+      series: [{
+                name: 'soilmoisture',
+                data: {{res_4|safe}},
+      }],
+    });
+</script>
+
+{%endblock %}
